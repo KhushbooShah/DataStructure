@@ -1,27 +1,39 @@
 /**
- * Union Find with Path Compression when elements represented using int
+ * Union Find with Rank & Path Compression when elements represented using int
  */
-public class UnionFindWithPathCompression {
+public class UnionFindByRankPathCompression {
 
     int[] parent;
+    int[] sizeOfElement;
 
-    public UnionFindWithPathCompression(int size) {
+    public UnionFindByRankPathCompression(int size) {
         if(size <= 0)
             throw new IllegalArgumentException("Size cannot be less than or equal to zero");
 
         parent = new int[size];
 
         //Initialize parent array to itself (i.e self parent)
-        for(int i=0; i < size; i++) 
+        for(int i=0; i < size; i++) {
             parent[i] = i;
+            sizeOfElement[i] = i;
+        }
     }
 
     public void union(int a, int b) {
         int rootOfA = find(a);
         int rootOfB = find(b);
 
-        if(rootOfA != rootOfB)
-            parent[rootOfA] = b;
+        //We merge the smaller sized component into the larger one
+        if(rootOfA != rootOfB) {
+            if(sizeOfElement[rootOfA] < sizeOfElement[rootOfB]) {
+                parent[rootOfA] = b;
+                sizeOfElement[b] += sizeOfElement[a];
+            }
+            else {
+                parent[rootOfB] = a;
+                sizeOfElement[a] += sizeOfElement[b];
+            }
+        }
     }
 
     //Path compression happens during the find operation
@@ -38,7 +50,7 @@ public class UnionFindWithPathCompression {
 
     public static void main(String[] args) {
         int noOfElements = 9;
-        UnionFindByRankPathCompression uf = new UnionFindByRankPathCompression(noOfElements);
+        UnionFindWithPathCompression uf = new UnionFindWithPathCompression(noOfElements);
         uf.union(0,1);
         uf.union(2,3);
         uf.union(3,7);
